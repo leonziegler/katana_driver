@@ -52,6 +52,7 @@ public:
   virtual ~Katana();
 
   void refreshEncoders();
+  void refreshSensors();
 
   virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj,
                                  boost::function<bool()> isPreemptRequested);
@@ -87,9 +88,9 @@ private:
   ros::Time last_encoder_update_;
 
   void calibrate();
-
   bool switchMotorsOff(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
   bool switchMotorsOn(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
+
   bool testSpeedSrv(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
 };
 

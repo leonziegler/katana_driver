@@ -44,6 +44,7 @@ public:
   virtual ~AbstractKatana();
 
   virtual void refreshEncoders() = 0;
+  virtual void refreshSensors() = 0;
   virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj,
                                  boost::function<bool()> isPreemptRequested) = 0;
   virtual void freezeRobot();
@@ -69,6 +70,38 @@ public:
   virtual std::vector<double> getMotorAngles();
   virtual std::vector<double> getMotorVelocities();
 
+  /**
+   * Get the readings from the sensor gripper. Readings range from 0 to 255.
+   *
+   * For distance sensors readings correlate to the measured distance, but also
+   * slightly depend on the surrounding lighting conditions.
+   * The reading's measuring unit roughly equals millimeters for small distances.
+   *
+   * For force sensors readings correlate to the measured force applied to the
+   * sensors. A value of 0 means no measured force, 255 means maximal measurable force.
+   *
+   * Index map:
+   *
+   * 0:  Right finger, distance sensor, inside, near to wrist
+   * 1:  Right finger, distance sensor, inside, far from wrist
+   * 2:  ??
+   * 3:  ??
+   * 4:  Right finger, distance sensor, outside
+   * 5:  Right finger, distance sensor, tip
+   * 6:  Right finger, force sensor,    inside, near to wrist
+   * 7:  Right finger, force sensor,    inside, far from wrist
+   * 8:  Left finger,  distance sensor, inside, near to wrist
+   * 9:  Left finger,  distance sensor, inside, far from wrist
+   * 10: ??
+   * 11: Wrist      ,  distance sensor, between fingers
+   * 12: Left finger,  distance sensor, outside
+   * 13: Left finger,  distance sensor, tip
+   * 14: Left finger,  force sensor,    inside, near to wrist
+   * 15: Left finger,  force sensor,    inside, far from wrist
+   *
+   */
+  virtual std::vector<short> getGripperSensorReadings();
+
   virtual std::vector<moveit_msgs::JointLimits> getMotorLimits();
   virtual double getMotorLimitMax(std::string joint_name);
   virtual double getMotorLimitMin(std::string joint_name);
@@ -77,7 +110,6 @@ public:
   virtual bool someMotorCrashed() = 0;
   virtual bool allJointsReady() = 0;
   virtual bool allMotorsReady() = 0;
-
 
 protected:
   // only the 5 "real" joints:
@@ -96,6 +128,10 @@ protected:
   // the motor limits of the 6 motors
 
   std::vector<moveit_msgs::JointLimits> motor_limits_;
+
+  // readings from gripper's distance sensors
+
+  std::vector<short> gripper_sensor_readings_;
 };
 
 }

@@ -192,6 +192,11 @@ std::vector<double> AbstractKatana::getMotorVelocities()
   return motor_velocities_;
 }
 
+std::vector<short> AbstractKatana::getGripperSensorReadings()
+{
+  return gripper_sensor_readings_;
+}
+
 std::vector<moveit_msgs::JointLimits> AbstractKatana::getMotorLimits()
 {
   return motor_limits_;

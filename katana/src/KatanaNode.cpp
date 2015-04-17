@@ -77,6 +77,7 @@ int KatanaNode::loop()
   while (ros::ok())
   {
     katana->refreshEncoders();
+    katana->refreshSensors();
     jointStatePublisher.update();
     jointTrajectoryActionController.update();
 
