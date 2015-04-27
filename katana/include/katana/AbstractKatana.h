@@ -48,6 +48,7 @@ public:
   virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj,
                                  boost::function<bool()> isPreemptRequested) = 0;
   virtual void freezeRobot();
+  virtual void freezeMotor(int motorIndex);
 
   /**
    * Move the joint to the desired angle. Do not wait for result,
@@ -60,12 +61,15 @@ public:
   virtual bool moveJoint(int jointIndex, double turningAngle) = 0;
 
   virtual int getJointIndex(std::string joint_name);
+  virtual int getGripperSensorIndex(std::string senosr_name);
 
   virtual std::vector<std::string> getJointNames();
   virtual std::vector<int> getJointTypes();
 
   virtual std::vector<std::string> getGripperJointNames();
   virtual std::vector<int> getGripperJointTypes();
+
+  virtual std::vector<std::string> getGripperSensorNames();
 
   virtual std::vector<double> getMotorAngles();
   virtual std::vector<double> getMotorVelocities();
@@ -119,6 +123,8 @@ protected:
   // the two "finger" joints of the gripper:
   std::vector<std::string> gripper_joint_names_;
   std::vector<int> gripper_joint_types_;
+
+  std::vector<std::string> sensor_names_;
 
   // all motors (the 5 "real" joints plus the gripper)
 

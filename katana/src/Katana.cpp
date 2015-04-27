@@ -248,7 +248,7 @@ void Katana::refreshSensors()
     const TSctDAT* data = sensor_ctrl.GetDAT();
 
     gripper_sensor_readings_.resize(NUM_GRIPPER_SENSORS);
-    gripper_sensor_readings_.assign(data, data + NUM_GRIPPER_SENSORS);
+    gripper_sensor_readings_.assign(data->arr, data->arr + NUM_GRIPPER_SENSORS);
 
   }
   catch (const WrongCRCException &e)
@@ -511,6 +511,13 @@ void Katana::freezeRobot()
   boost::recursive_mutex::scoped_lock lock(kni_mutex);
   kni->flushMoveBuffers();
   kni->freezeRobot();
+}
+
+void Katana::freezeMotor(int motorIndex)
+{
+  boost::recursive_mutex::scoped_lock lock(kni_mutex);
+  kni->flushMoveBuffers();
+  kni->freezeMotor(motorIndex);
 }
 
 bool Katana::moveJoint(int motorIndex, double desiredAngle)
