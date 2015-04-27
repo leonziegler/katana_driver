@@ -70,6 +70,7 @@ int KatanaNode::loop()
   ros::Rate loop_rate(25);
 
   JointStatePublisher jointStatePublisher(katana);
+  SensorStatePublisher sensorStatePublisher(katana);
   JointMovementActionController jointMovementActionController(katana);
   JointTrajectoryActionController jointTrajectoryActionController(katana);
   KatanaGripperGraspController katanaGripperGraspController(katana);
@@ -79,6 +80,7 @@ int KatanaNode::loop()
     katana->refreshEncoders();
     katana->refreshSensors();
     jointStatePublisher.update();
+    sensorStatePublisher.update();
     jointTrajectoryActionController.update();
 
     ros::spinOnce();
