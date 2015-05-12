@@ -99,6 +99,7 @@ void KatanaGripperGraspController::executeCB(const control_msgs::GripperCommandG
 
 void KatanaGripperGraspController::executeCBwithSensor(const control_msgs::GripperCommandGoalConstPtr &goal)
 {
+
   ros::NodeHandle root_nh("");
   ROS_INFO("Moving gripper to position: %f", goal->command.position);
   bool moveJointSuccess = katana_->moveJoint(GRIPPER_INDEX, goal->command.position);
@@ -106,12 +107,18 @@ void KatanaGripperGraspController::executeCBwithSensor(const control_msgs::Gripp
   ros::Duration duration(GRIPPER_OPENING_CLOSING_DURATION);
   ros::Time begin = ros::Time::now();
 
-  while ( !isForceLimitReached() && !isGoalReached(goal) && ros::Time::now() < begin + duration) {
-	  usleep(10 * 1000);
+  // Sensors not required when opening
+  if (goal->command.position > katana_->getMotorAngles()[GRIPPER_INDEX]) {
+    while ( !isGoalReached(goal) && ros::Time::now() < begin + duration) {
+      usleep(10 * 1000);
+    }
+  } else {
+    while ( !isForceLimitReached() && !isGoalReached(goal) && ros::Time::now() < begin + duration) {
+      usleep(10 * 1000);
+    }
+
+    katana_->freezeMotor(GRIPPER_INDEX);
   }
-
-  katana_->freezeMotor(GRIPPER_INDEX);
-
   control_msgs::GripperCommandResult result;
   result.position = katana_->getMotorAngles()[GRIPPER_INDEX];
   result.reached_goal = false;
