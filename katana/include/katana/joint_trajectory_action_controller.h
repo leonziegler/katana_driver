@@ -58,10 +58,12 @@ typedef actionlib::SimpleActionServer<control_msgs::FollowJointTrajectoryAction>
 
 public:
   JointTrajectoryActionController(boost::shared_ptr<AbstractKatana> katana);
+  JointTrajectoryActionController();
   virtual ~JointTrajectoryActionController();
 
   void reset_trajectory_and_stop();
   void update();
+  void setKatana(boost::shared_ptr<AbstractKatana> katana);
 
 private:
   // additional control_msgs::FollowJointTrajectoryResult
@@ -75,6 +77,8 @@ private:
 //  double goal_time_constraint_;
   double stopped_velocity_tolerance_;
   std::vector<double> goal_constraints_;
+
+  void init();
 
   // subscriber to "command" topic
   void commandCB(const trajectory_msgs::JointTrajectory::ConstPtr &msg);

@@ -48,7 +48,10 @@ class JointMovementActionController
 
 public:
   JointMovementActionController(boost::shared_ptr<AbstractKatana> katana);
+  JointMovementActionController();
   virtual ~JointMovementActionController();
+
+  void setKatana(boost::shared_ptr<AbstractKatana> katana);
 
 private:
   // robot and joint state

@@ -33,6 +33,22 @@ namespace katana
 KatanaGripperGraspController::KatanaGripperGraspController(boost::shared_ptr<AbstractKatana> katana) :
   katana_(katana)
 {
+  init();
+}
+
+KatanaGripperGraspController::KatanaGripperGraspController()
+{
+  init();
+}
+
+KatanaGripperGraspController::~KatanaGripperGraspController()
+{
+  delete action_server_;
+  delete action_sensor_server_;
+}
+
+void KatanaGripperGraspController::init()
+{
   ros::NodeHandle root_nh("");
   ros::NodeHandle pn("~");
 
@@ -45,7 +61,7 @@ KatanaGripperGraspController::KatanaGripperGraspController(boost::shared_ptr<Abs
 
   std::string gripper_grasp_posture_controller = root_nh.resolveName("gripper_grasp_posture_controller");
   action_server_ = new actionlib::SimpleActionServer<control_msgs::GripperCommandAction>(root_nh,
-      gripper_grasp_posture_controller, boost::bind(&KatanaGripperGraspController::executeCB, this, _1), false);
+	  gripper_grasp_posture_controller, boost::bind(&KatanaGripperGraspController::executeCB, this, _1), false);
   action_server_->start();
   ROS_INFO_STREAM("katana gripper grasp hand posture action server started on topic " << gripper_grasp_posture_controller);
 
@@ -54,13 +70,11 @@ KatanaGripperGraspController::KatanaGripperGraspController(boost::shared_ptr<Abs
 		  gripper_grasp_posture_with_sensors_controller, boost::bind(&KatanaGripperGraspController::executeCBwithSensor, this, _1), false);
   action_sensor_server_->start();
   ROS_INFO_STREAM("katana gripper grasp with sensors hand posture action server started on topic " << gripper_grasp_posture_with_sensors_controller);
-
 }
 
-KatanaGripperGraspController::~KatanaGripperGraspController()
+void KatanaGripperGraspController::setKatana(boost::shared_ptr<AbstractKatana> katana)
 {
-  delete action_server_;
-  delete action_sensor_server_;
+	katana_ = katana;
 }
 
 void KatanaGripperGraspController::executeCB(const control_msgs::GripperCommandGoalConstPtr &goal)

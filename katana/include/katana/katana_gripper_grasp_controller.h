@@ -44,7 +44,10 @@ class KatanaGripperGraspController
 {
 public:
   KatanaGripperGraspController(boost::shared_ptr<AbstractKatana> katana);
+  KatanaGripperGraspController();
   virtual ~KatanaGripperGraspController();
+
+  void setKatana(boost::shared_ptr<AbstractKatana> katana);
 
 private:
   //! Action server for the grasp posture action
@@ -59,6 +62,8 @@ private:
   //! A difference in desired goal angle and actual goal angle above this value indicates that the goal was not reached
   double goal_threshold_;
   int force_threshold_;
+
+  void init();
 
   void executeCB(const control_msgs::GripperCommandGoalConstPtr &goal);
   void executeCBwithSensor(const control_msgs::GripperCommandGoalConstPtr &goal);
