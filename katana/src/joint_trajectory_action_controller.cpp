@@ -34,33 +34,15 @@ namespace katana
 {
 
 JointTrajectoryActionController::JointTrajectoryActionController(boost::shared_ptr<AbstractKatana> katana) :
-  action_server_(ros::NodeHandle(), "katana_arm_controller/joint_trajectory_action",
+  katana_(katana), action_server_(ros::NodeHandle(), "katana_arm_controller/joint_trajectory_action",
                                   boost::bind(&JointTrajectoryActionController::executeCB, this, _1), false),
   action_server_follow_(ros::NodeHandle(), "katana_arm_controller/follow_joint_trajectory",
 			boost::bind(&JointTrajectoryActionController::executeCBFollow, this, _1), false)
-{
-  init();
-  setKatana(katana);
-}
-
-JointTrajectoryActionController::JointTrajectoryActionController() :
-  action_server_(ros::NodeHandle(), "katana_arm_controller/joint_trajectory_action",
-                                  boost::bind(&JointTrajectoryActionController::executeCB, this, _1), false),
-  action_server_follow_(ros::NodeHandle(), "katana_arm_controller/follow_joint_trajectory",
-			boost::bind(&JointTrajectoryActionController::executeCBFollow, this, _1), false)
-{
-  init();
-}
-
-JointTrajectoryActionController::~JointTrajectoryActionController()
-{
-  sub_command_.shutdown();
-  serve_query_state_.shutdown();
-}
-
-void JointTrajectoryActionController::init()
 {
   ros::NodeHandle node_;
+
+  joints_ = katana_->getJointNames();
+
 
   // Trajectory and goal constraints
   //  node_.param("joint_trajectory_action_node/constraints/goal_time", goal_time_constraint_, 0.0);
@@ -69,9 +51,9 @@ void JointTrajectoryActionController::init()
   //  trajectory_constraints_.resize(joints_.size());
   for (size_t i = 0; i < joints_.size(); ++i)
   {
-	std::string ns = std::string("joint_trajectory_action_node/constraints") + joints_[i];
-	node_.param(ns + "/goal", goal_constraints_[i], 0.02);
-	//    node_.param(ns + "/trajectory", trajectory_constraints_[i], -1.0);
+    std::string ns = std::string("joint_trajectory_action_node/constraints") + joints_[i];
+    node_.param(ns + "/goal", goal_constraints_[i], 0.02);
+    //    node_.param(ns + "/trajectory", trajectory_constraints_[i], -1.0);
   }
 
   // Subscriptions, publishers, services
@@ -83,14 +65,56 @@ void JointTrajectoryActionController::init()
 
   // NOTE: current_trajectory_ is not initialized here, because that will happen in reset_trajectory_and_stop()
 
+  reset_trajectory_and_stop();
+}
+
+JointTrajectoryActionController::JointTrajectoryActionController() :
+  action_server_(ros::NodeHandle(), "katana_arm_controller/joint_trajectory_action",
+                                  boost::bind(&JointTrajectoryActionController::executeCB, this, _1), false),
+  action_server_follow_(ros::NodeHandle(), "katana_arm_controller/follow_joint_trajectory",
+			boost::bind(&JointTrajectoryActionController::executeCBFollow, this, _1), false)
+{
+  ros::NodeHandle node_;
+
+  // Subscriptions, publishers, services
+  action_server_.start();
+  action_server_follow_.start();
+  sub_command_ = node_.subscribe("katana_arm_controller/command", 1, &JointTrajectoryActionController::commandCB, this);
+  serve_query_state_ = node_.advertiseService("katana_arm_controller/query_state", &JointTrajectoryActionController::queryStateService, this);
+  controller_state_publisher_ = node_.advertise<control_msgs::JointTrajectoryControllerState> ("katana_arm_controller/state", 1);
+
+}
+
+JointTrajectoryActionController::~JointTrajectoryActionController()
+{
+  sub_command_.shutdown();
+  serve_query_state_.shutdown();
 }
 
 void JointTrajectoryActionController::setKatana(boost::shared_ptr<AbstractKatana> katana)
 {
-	katana_ = katana;
-	joints_ = katana_->getJointNames();
+  katana_ = katana;
 
-	reset_trajectory_and_stop();
+  ros::NodeHandle node_;
+
+  joints_ = katana_->getJointNames();
+
+
+  // Trajectory and goal constraints
+  //  node_.param("joint_trajectory_action_node/constraints/goal_time", goal_time_constraint_, 0.0);
+  node_.param("joint_trajectory_action_node/constraints/stopped_velocity_tolerance", stopped_velocity_tolerance_, 1e-6);
+  goal_constraints_.resize(joints_.size());
+  //  trajectory_constraints_.resize(joints_.size());
+  for (size_t i = 0; i < joints_.size(); ++i)
+  {
+    std::string ns = std::string("joint_trajectory_action_node/constraints") + joints_[i];
+    node_.param(ns + "/goal", goal_constraints_[i], 0.02);
+    //    node_.param(ns + "/trajectory", trajectory_constraints_[i], -1.0);
+  }
+
+  // NOTE: current_trajectory_ is not initialized here, because that will happen in reset_trajectory_and_stop()
+
+  reset_trajectory_and_stop();
 }
 
 /**
