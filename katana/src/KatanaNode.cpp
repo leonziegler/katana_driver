@@ -59,10 +59,6 @@ KatanaNode::KatanaNode()
       exit(-1);
     }
   }
-
-  jointMovementActionController.setKatana(katana);
-  jointTrajectoryActionController.setKatana(katana);
-  katanaGripperGraspController.setKatana(katana);
 }
 
 KatanaNode::~KatanaNode()
@@ -75,6 +71,9 @@ int KatanaNode::loop()
 
   JointStatePublisher jointStatePublisher(katana);
   SensorStatePublisher sensorStatePublisher(katana);
+  jointMovementActionController.setKatana(katana);
+  jointTrajectoryActionController.setKatana(katana);
+  katanaGripperGraspController.setKatana(katana);
 
   while (ros::ok())
   {

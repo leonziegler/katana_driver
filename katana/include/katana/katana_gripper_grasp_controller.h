@@ -63,8 +63,6 @@ private:
   double goal_threshold_;
   int force_threshold_;
 
-  void init();
-
   void executeCB(const control_msgs::GripperCommandGoalConstPtr &goal);
   void executeCBwithSensor(const control_msgs::GripperCommandGoalConstPtr &goal);
 
