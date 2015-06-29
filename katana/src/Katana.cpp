@@ -650,6 +650,7 @@ bool Katana::switchMotorsOff(std_srvs::Empty::Request &request, std_srvs::Empty:
 {
   ROS_WARN("Switching all motors off!");
   boost::recursive_mutex::scoped_lock lock(kni_mutex);
+  kni->unBlock();
   kni->switchRobotOff();
   return true;
 }
