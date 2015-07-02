@@ -59,7 +59,7 @@ public:
 
   virtual void freezeRobot();
   virtual void freezeMotor(int motorIndex);
-  virtual bool moveJoint(int jointIndex, double turningAngle);
+  virtual bool moveJoint(int jointIndex, double turningAngle, double velocity = 0.0);
 
   virtual void refreshMotorStatus();
   virtual bool someMotorCrashed();

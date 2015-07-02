@@ -53,7 +53,7 @@ public:
                                  boost::function<bool()> isPreemptRequested);
 
   virtual void freezeRobot();
-  virtual bool moveJoint(int jointIndex, double turningAngle);
+  virtual bool moveJoint(int jointIndex, double turningAngle, double velocity = 0.0);
 
   virtual void refreshMotorStatus();
   virtual bool allJointsReady();

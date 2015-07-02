@@ -520,7 +520,7 @@ void Katana::freezeMotor(int motorIndex)
   kni->freezeMotor(motorIndex);
 }
 
-bool Katana::moveJoint(int motorIndex, double desiredAngle)
+bool Katana::moveJoint(int motorIndex, double desiredAngle, double velocity)
 {
   if (desiredAngle < motor_limits_[motorIndex].min_position || motor_limits_[motorIndex].max_position < desiredAngle)
   {
@@ -531,7 +531,12 @@ bool Katana::moveJoint(int motorIndex, double desiredAngle)
   try
   {
     boost::recursive_mutex::scoped_lock lock(kni_mutex);
+    double velocity_backup = kni->getMotorVelocityLimit(motorIndex);
+    if (velocity > 0.0) {
+    	kni->setMotorVelocityLimit(motorIndex, velocity);
+    }
     kni->moveMotorToEnc(motorIndex, converter->angle_rad2enc(motorIndex, desiredAngle), false, 100);
+    kni->setMotorVelocityLimit(motorIndex, velocity_backup);
     return true;
   }
   catch (const WrongCRCException &e)

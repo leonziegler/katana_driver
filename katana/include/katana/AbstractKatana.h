@@ -58,7 +58,7 @@ public:
    * @param turningAngle the target angle
    * @return true iff command was successfully sent to Katana
    */
-  virtual bool moveJoint(int jointIndex, double turningAngle) = 0;
+  virtual bool moveJoint(int jointIndex, double turningAngle, double velocity = 0.0) = 0;
 
   virtual int getJointIndex(std::string joint_name);
   virtual int getGripperSensorIndex(std::string senosr_name);

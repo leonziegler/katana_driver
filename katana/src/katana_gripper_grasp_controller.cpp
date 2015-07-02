@@ -133,7 +133,7 @@ void KatanaGripperGraspController::executeCBwithSensor(const control_msgs::Gripp
 
   ros::NodeHandle root_nh("");
   ROS_INFO("Moving gripper to position: %f", goal->command.position);
-  bool moveJointSuccess = katana_->moveJoint(GRIPPER_INDEX, goal->command.position);
+  bool moveJointSuccess = katana_->moveJoint(GRIPPER_INDEX, goal->command.position, KNI_MAX_VELOCITY / 2);
   // wait for gripper to open/close
   ros::Duration duration(GRIPPER_OPENING_CLOSING_DURATION);
   ros::Time begin = ros::Time::now();

@@ -118,7 +118,7 @@ void SimulatedKatana::moveGripper(double openingAngle)
   return;
 }
 
-bool SimulatedKatana::moveJoint(int jointIndex, double turningAngle){
+bool SimulatedKatana::moveJoint(int jointIndex, double turningAngle, double velocity){
   ROS_ERROR("moveJoint() not yet implemented for SimulatedKatana!");
   return false;
 }
