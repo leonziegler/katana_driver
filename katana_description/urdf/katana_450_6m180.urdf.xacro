@@ -207,7 +207,7 @@
 
   <link name="katana_motor5_wrist_roll_link">
       <visual>
-        <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
           <mesh filename="package://katana_description/meshes/katana/katana_motor5_wrist_roll_link.stl"/>
         </geometry>
@@ -219,7 +219,7 @@
         <material name="grey" />
       </visual>
       <collision>
-        <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
           <mesh filename="package://katana_description/meshes/katana/convex/katana_motor5_wrist_roll_link_convex.stl"/>
         </geometry>
